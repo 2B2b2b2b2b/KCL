@@ -16,41 +16,38 @@ body{
 }
 @keyframes bg{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 
-.container{
-  width:92%;max-width:420px;text-align:center;padding:28px;
-  background:rgba(255,255,255,.16);border-radius:26px;
-  backdrop-filter:blur(12px); box-shadow:0 0 40px rgba(255,0,150,.55);
+.screen{
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column; text-align:center;
 }
 
 h1{
-  font-size:2.2rem;margin-bottom:22px;
-  text-shadow:0 0 15px #ff69b4; animation:pulse 2s infinite;
+  font-size:2.2rem;
+  text-shadow:0 0 15px #ff69b4;
+  animation:pulse 2s infinite;
 }
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 
-.buttons{position:relative; height:160px;}
 .yes{
-  position:absolute; left:50%; top:40px; transform:translateX(-50%);
-  font-size:1.5rem; padding:14px 42px; border:none; border-radius:50px;
+  margin-top:30px;
+  font-size:1.5rem;
+  padding:14px 42px;
+  border:none;border-radius:50px;
   background:linear-gradient(45deg,#ff4b8b,#ff85c2);
-  color:#fff; cursor:pointer; box-shadow:0 0 22px #ff69b4;
-  transition:transform .15s;
+  color:#fff;cursor:pointer;
+  box-shadow:0 0 22px #ff69b4;
 }
-.yes:active{transform:translateX(-50%) scale(1.12)}
 
-.message{
-  display:none;
-  margin-top:22px;
-  font-size:1.6rem;
-  font-weight:600;
-  text-shadow:0 0 12px #fff;
+.locked{
+  font-size:3rem;
+  font-weight:700;
+  text-shadow:0 0 20px #fff;
 }
 
 .float{
-  position:absolute;
-  bottom:-20px;
+  position:absolute; bottom:-20px;
   animation:up linear infinite;
-  opacity:.95;
   pointer-events:none;
 }
 @keyframes up{
@@ -58,109 +55,61 @@ h1{
   to{transform:translateY(-120vh);opacity:0}
 }
 
-@media (max-width:480px){
+@media(max-width:480px){
   h1{font-size:2rem}
-  .yes{font-size:1.35rem}
+  .locked{font-size:2.4rem}
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<!-- FIRST SCREEN -->
+<div class="screen" id="ask">
   <h1>Nana 🫩💖<br>Will you be my Valentine?</h1>
-
-  <div class="buttons" id="buttons">
-    <button class="yes" id="yesBtn">YES 🫩💖</button>
-  </div>
-
-  <div class="message" id="msg">
-    locked in 🔒🫩
-  </div>
+  <button class="yes" onclick="accept()">YES 🫩💖</button>
 </div>
 
+<!-- LOCKED IN SCREEN -->
+<div class="screen" id="locked" style="display:none;">
+  <div class="locked">locked in 🔒🫩</div>
+</div>
+
+<!-- MUSIC -->
 <audio id="music" preload="auto" loop>
-  <source src="https://files.catbox.moe/7r5b7y.mp3" type="audio/mpeg">
+  <!-- ✅ PUT hunxho-yes.mp3 IN THE SAME REPO -->
+  <source src="hunxho-yes.mp3" type="audio/mpeg">
 </audio>
 
 <script>
-const buttons = document.getElementById('buttons');
-const baseBtn = document.getElementById('yesBtn');
-const msg = document.getElementById('msg');
 const music = document.getElementById('music');
-let started = false;
 
-// YES CLICK
 function accept(){
-  msg.style.display='block';
+  // switch screens
+  document.getElementById('ask').style.display='none';
+  document.getElementById('locked').style.display='flex';
 
-  if(!started){
-    music.volume = 0.9;
-    music.play().catch(err => {
-      console.log("Music blocked until interaction", err);
-    });
-    started = true;
-  }
-
-  // BIG confetti blast
-  for(let i=0;i<40;i++) confettiBurst();
-
-  // continuous celebration
-  let party = setInterval(confettiBurst,120);
-  setTimeout(()=>clearInterval(party),4000);
-}
-
-// MULTIPLY BUTTONS
-function multiply(btn){
-  for(let i=0;i<2;i++){
-    const b = btn.cloneNode(true);
-    b.style.left = Math.random()*80 + '%';
-    b.style.top = Math.random()*110 + 'px';
-    wire(b);
-    buttons.appendChild(b);
-  }
-}
-
-// RUN FROM FINGER
-function chase(e){
-  document.querySelectorAll('.yes').forEach(b=>{
-    const r=b.getBoundingClientRect();
-    const x=(e.touches?e.touches[0].clientX:e.clientX);
-    const y=(e.touches?e.touches[0].clientY:e.clientY);
-    const dx=r.left+r.width/2-x;
-    const dy=r.top+r.height/2-y;
-    const dist=Math.hypot(dx,dy);
-    if(dist<120){
-      b.style.left=Math.random()*85+'%';
-      b.style.top=Math.random()*120+'px';
-    }
+  // play music (user gesture = allowed)
+  music.volume = 1;
+  music.play().catch(err=>{
+    console.log("Music blocked:", err);
   });
+
+  // chaos
+  for(let i=0;i<40;i++) confetti();
+  setInterval(confetti,300);
 }
 
-function wire(b){
-  b.onclick=accept;
-  b.onmouseenter=()=>multiply(b);
-  b.ontouchstart=()=>multiply(b);
+function confetti(){
+  const e=document.createElement('div');
+  e.className='float';
+  e.textContent=['🫩','💖','🎉','✨'][Math.floor(Math.random()*4)];
+  e.style.left=Math.random()*100+'vw';
+  e.style.fontSize=(20+Math.random()*30)+'px';
+  e.style.animationDuration=(2+Math.random()*3)+'s';
+  document.body.appendChild(e);
+  setTimeout(()=>e.remove(),6000);
 }
-
-wire(baseBtn);
-document.addEventListener('mousemove',chase);
-document.addEventListener('touchmove',chase,{passive:true});
-
-// CONFETTI / EMOJI
-function confettiBurst(){
-  const c=document.createElement('div');
-  c.className='float';
-  c.textContent = ['🫩','💖','🎉','✨'][Math.floor(Math.random()*4)];
-  c.style.left=Math.random()*100+'vw';
-  c.style.fontSize=(18+Math.random()*30)+'px';
-  c.style.animationDuration=(2+Math.random()*3)+'s';
-  document.body.appendChild(c);
-  setTimeout(()=>c.remove(),6000);
-}
-
-// gentle emoji rain
-setInterval(confettiBurst,450);
 </script>
 
 </body>
