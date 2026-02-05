@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>For Nana 🫩💖</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<style>
+* { box-sizing: border-box; font-family: 'Poppins','Comic Sans MS',cursive; }
+
+body{
+  margin:0;height:100vh;overflow:hidden;color:#fff;
+  background:linear-gradient(270deg,#ff9a9e,#fad0c4,#fbc2eb,#a18cd1,#ff9a9e);
+  background-size:1000% 1000%; animation:bg 14s ease infinite;
+  display:flex;align-items:center;justify-content:center;
+}
+@keyframes bg{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+.container{
+  width:92%;max-width:420px;text-align:center;padding:28px;
+  background:rgba(255,255,255,.16);border-radius:26px;
+  backdrop-filter:blur(12px); box-shadow:0 0 40px rgba(255,0,150,.55);
+}
+
+h1{
+  font-size:2.2rem;margin-bottom:22px;
+  text-shadow:0 0 15px #ff69b4; animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+
+.buttons{position:relative; height:160px;}
+.yes{
+  position:absolute; left:50%; top:40px; transform:translateX(-50%);
+  font-size:1.5rem; padding:14px 42px; border:none; border-radius:50px;
+  background:linear-gradient(45deg,#ff4b8b,#ff85c2);
+  color:#fff; cursor:pointer; box-shadow:0 0 22px #ff69b4;
+  transition:transform .15s;
+}
+.yes:active{transform:translateX(-50%) scale(1.12)}
+
+.message{display:none;margin-top:22px;font-size:1.5rem;text-shadow:0 0 10px #fff}
+
+.float{position:absolute; bottom:-20px; animation:up linear infinite; opacity:.9}
+@keyframes up{from{transform:translateY(0)}to{transform:translateY(-120vh);opacity:0}}
+
+.overlay{
+  position:fixed; inset:0; background:rgba(0,0,0,.55);
+  display:none; align-items:center; justify-content:center; text-align:center;
+  z-index:999;
+}
+.overlay .card{
+  background:#fff;color:#ff4b8b;padding:28px;border-radius:22px;
+  box-shadow:0 0 30px rgba(255,0,150,.5)
+}
+
+@media (max-width:480px){
+  h1{font-size:2rem}
+  .yes{font-size:1.35rem}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Nana 🫩💖<br>Will you be my Valentine?</h1>
+
+  <div class="buttons" id="buttons">
+    <button class="yes" id="yesBtn">YES 🫩💖</button>
+  </div>
+
+  <div class="message" id="msg">
+    YAYYYY 🫩💘 Nana, you’re officially my Valentine 💖
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="card">
+    <h2>Screenshot this 🫩💖</h2>
+    <p>Proof of destiny 😌</p>
+  </div>
+</div>
+
+<audio id="music" loop>
+  <source src="https://files.catbox.moe/7r5b7y.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const buttons = document.getElementById('buttons');
+const baseBtn = document.getElementById('yesBtn');
+const msg = document.getElementById('msg');
+const music = document.getElementById('music');
+const overlay = document.getElementById('overlay');
+let started=false;
+
+// YES click
+function accept(){
+  msg.style.display='block';
+  if(!started){ music.play(); started=true; }
+  fireworks(18);
+  setTimeout(()=>overlay.style.display='flex',1200);
+}
+
+// Multiply on hover/touch
+function multiply(btn){
+  for(let i=0;i<2;i++){
+    const b = btn.cloneNode(true);
+    b.style.left = Math.random()*80 + '%';
+    b.style.top = Math.random()*110 + 'px';
+    wire(b);
+    buttons.appendChild(b);
+  }
+}
+
+// Make buttons run away from finger
+function chase(e){
+  document.querySelectorAll('.yes').forEach(b=>{
+    const r=b.getBoundingClientRect();
+    const x=(e.touches?e.touches[0].clientX:e.clientX);
+    const y=(e.touches?e.touches[0].clientY:e.clientY);
+    const dx=r.left+r.width/2-x;
+    const dy=r.top+r.height/2-y;
+    const dist=Math.hypot(dx,dy);
+    if(dist<120){
+      b.style.left=Math.min(85,Math.max(0,Math.random()*85))+'%';
+      b.style.top=Math.min(120,Math.max(0,Math.random()*120))+'px';
+    }
+  });
+}
+
+function wire(b){
+  b.onclick=accept;
+  b.onmouseenter=()=>multiply(b);
+  b.ontouchstart=()=>multiply(b);
+}
+
+wire(baseBtn);
+document.addEventListener('mousemove',chase);
+document.addEventListener('touchmove',chase,{passive:true});
+
+// 🫩 rain
+function emojiRain(){
+  const e=document.createElement('div');
+  e.className='float'; e.textContent='🫩';
+  e.style.left=Math.random()*100+'vw';
+  e.style.fontSize=(18+Math.random()*34)+'px';
+  e.style.animationDuration=(3+Math.random()*4)+'s';
+  document.body.appendChild(e);
+  setTimeout(()=>e.remove(),7000);
+}
+setInterval(emojiRain,420);
+
+// fireworks (confetti)
+function fireworks(n){
+  for(let i=0;i<n;i++){
+    const c=document.createElement('div');
+    c.className='float';
+    c.textContent=Math.random()>.5?'🫩':'💖';
+    c.style.left='50vw';
+    c.style.fontSize=(16+Math.random()*26)+'px';
+    c.style.animationDuration=(1.2+Math.random()*1.5)+'s';
+    c.style.transform=`translate(${(Math.random()*400-200)}px,0)`;
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),3000);
+  }
+}
+</script>
+</body>
+</html>
