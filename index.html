@@ -38,19 +38,23 @@ h1{
 }
 .yes:active{transform:translateX(-50%) scale(1.12)}
 
-.message{display:none;margin-top:22px;font-size:1.5rem;text-shadow:0 0 10px #fff}
-
-.float{position:absolute; bottom:-20px; animation:up linear infinite; opacity:.9}
-@keyframes up{from{transform:translateY(0)}to{transform:translateY(-120vh);opacity:0}}
-
-.overlay{
-  position:fixed; inset:0; background:rgba(0,0,0,.55);
-  display:none; align-items:center; justify-content:center; text-align:center;
-  z-index:999;
+.message{
+  display:none;
+  margin-top:22px;
+  font-size:1.5rem;
+  text-shadow:0 0 10px #fff;
 }
-.overlay .card{
-  background:#fff;color:#ff4b8b;padding:28px;border-radius:22px;
-  box-shadow:0 0 30px rgba(255,0,150,.5)
+
+.float{
+  position:absolute;
+  bottom:-20px;
+  animation:up linear infinite;
+  opacity:.95;
+  pointer-events:none;
+}
+@keyframes up{
+  from{transform:translateY(0)}
+  to{transform:translateY(-120vh);opacity:0}
 }
 
 @media (max-width:480px){
@@ -74,13 +78,6 @@ h1{
   </div>
 </div>
 
-<div class="overlay" id="overlay">
-  <div class="card">
-    <h2>Screenshot this 🫩💖</h2>
-    <p>Proof of destiny 😌</p>
-  </div>
-</div>
-
 <audio id="music" loop>
   <source src="https://files.catbox.moe/7r5b7y.mp3" type="audio/mpeg">
 </audio>
@@ -90,18 +87,22 @@ const buttons = document.getElementById('buttons');
 const baseBtn = document.getElementById('yesBtn');
 const msg = document.getElementById('msg');
 const music = document.getElementById('music');
-const overlay = document.getElementById('overlay');
 let started=false;
 
-// YES click
+// YES CLICK
 function accept(){
   msg.style.display='block';
   if(!started){ music.play(); started=true; }
-  fireworks(18);
-  setTimeout(()=>overlay.style.display='flex',1200);
+
+  // BIG confetti blast
+  for(let i=0;i<40;i++) confettiBurst();
+
+  // continuous celebration for 4s
+  let party = setInterval(confettiBurst,120);
+  setTimeout(()=>clearInterval(party),4000);
 }
 
-// Multiply on hover/touch
+// MULTIPLY BUTTONS
 function multiply(btn){
   for(let i=0;i<2;i++){
     const b = btn.cloneNode(true);
@@ -112,7 +113,7 @@ function multiply(btn){
   }
 }
 
-// Make buttons run away from finger
+// RUN FROM FINGER
 function chase(e){
   document.querySelectorAll('.yes').forEach(b=>{
     const r=b.getBoundingClientRect();
@@ -122,8 +123,8 @@ function chase(e){
     const dy=r.top+r.height/2-y;
     const dist=Math.hypot(dx,dy);
     if(dist<120){
-      b.style.left=Math.min(85,Math.max(0,Math.random()*85))+'%';
-      b.style.top=Math.min(120,Math.max(0,Math.random()*120))+'px';
+      b.style.left=Math.random()*85+'%';
+      b.style.top=Math.random()*120+'px';
     }
   });
 }
@@ -138,32 +139,21 @@ wire(baseBtn);
 document.addEventListener('mousemove',chase);
 document.addEventListener('touchmove',chase,{passive:true});
 
-// 🫩 rain
-function emojiRain(){
-  const e=document.createElement('div');
-  e.className='float'; e.textContent='🫩';
-  e.style.left=Math.random()*100+'vw';
-  e.style.fontSize=(18+Math.random()*34)+'px';
-  e.style.animationDuration=(3+Math.random()*4)+'s';
-  document.body.appendChild(e);
-  setTimeout(()=>e.remove(),7000);
+// CONFETTI / EMOJI
+function confettiBurst(){
+  const c=document.createElement('div');
+  c.className='float';
+  c.textContent = ['🫩','💖','🎉','✨'][Math.floor(Math.random()*4)];
+  c.style.left=Math.random()*100+'vw';
+  c.style.fontSize=(18+Math.random()*30)+'px';
+  c.style.animationDuration=(2+Math.random()*3)+'s';
+  document.body.appendChild(c);
+  setTimeout(()=>c.remove(),6000);
 }
-setInterval(emojiRain,420);
 
-// fireworks (confetti)
-function fireworks(n){
-  for(let i=0;i<n;i++){
-    const c=document.createElement('div');
-    c.className='float';
-    c.textContent=Math.random()>.5?'🫩':'💖';
-    c.style.left='50vw';
-    c.style.fontSize=(16+Math.random()*26)+'px';
-    c.style.animationDuration=(1.2+Math.random()*1.5)+'s';
-    c.style.transform=`translate(${(Math.random()*400-200)}px,0)`;
-    document.body.appendChild(c);
-    setTimeout(()=>c.remove(),3000);
-  }
-}
+// gentle emoji rain
+setInterval(confettiBurst,450);
 </script>
+
 </body>
 </html>
